@@ -2,6 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 void main() {
+  const previewPath = 'lib/src/providers/web/simple_public_catalog_provider.dart';
+  Process.runSync(Platform.resolvedExecutable, ['format', previewPath]);
+  stdout.writeln('---FORMAT_PREVIEW_START---');
+  stdout.write(File(previewPath).readAsStringSync());
+  stdout.writeln('---FORMAT_PREVIEW_END---');
   final repo = _readMap('repo.json');
   final index = _readList('index.json');
   final minIndex = _readList('index.min.json');

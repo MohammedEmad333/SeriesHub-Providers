@@ -1,0 +1,20 @@
+{
+  "id": "cima4u",
+  "name": "Cima4u",
+  "version": 1,
+  "minAppVersion": "0.15.0",
+  "enabled": true,
+  "status": "experimental",
+  "capabilities": {
+    "browse": true,
+    "search": true,
+    "details": true,
+    "episodes": true,
+    "playback": true
+  },
+  "entrypoint": {
+    "type": "builtin",
+    "class": "Cima4uProvider"
+  },
+  "notes": "Playback resolves only direct publicly exposed HLS/DASH/MP4/WebM URLs from episode pages or public embeds. No DRM/token/authentication/anti-bot/private API bypass."
+}

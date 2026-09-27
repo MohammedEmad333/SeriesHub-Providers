@@ -14,3 +14,6 @@ export 'src/providers/youtube/official_youtube_provider.dart';
 export 'src/providers/youtube/youku_arabic_provider.dart';
 
 export 'src/providers/youtube/wetv_arabic_provider.dart';
+
+export 'src/providers/web/simple_public_catalog_provider.dart';
+export 'src/providers/web/catalog_sites.dart';

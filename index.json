@@ -160,8 +160,8 @@
     "hasReadme": 0,
     "hasChangelog": 0,
     "enabled": true,
-    "status": "experimental",
-    "playback": true,
+    "status": "metadata_only",
+    "playback": false,
     "manifest": "providers/elcinema/provider.json",
     "sources": [
       {

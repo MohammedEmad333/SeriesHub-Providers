@@ -4,9 +4,8 @@ import 'package:serieshub_providers/serieshub_providers.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test(
-    'MangoTV Arabic builds multiple series from the official YouTube feed',
-    () async {
+  test('MangoTV Arabic builds multiple series from the official YouTube feed',
+      () async {
     final provider = OfficialYouTubeProvider(
       client: MockClient((request) async {
         if (request.url.path == '/watch') {
@@ -61,8 +60,8 @@ void main() {
   });
 
   test(
-    'MangoTV Arabic falls back to the seed title when the feed is unavailable',
-    () async {
+      'MangoTV Arabic falls back to the seed title when the feed is unavailable',
+      () async {
     final provider = OfficialYouTubeProvider(
       client: MockClient((_) async => http.Response('not found', 404)),
     );

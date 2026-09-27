@@ -21,15 +21,15 @@ void main() {
 <feed xmlns:yt="http://www.youtube.com/xml/schemas/2015">
   <entry>
     <yt:videoId>videoA1</yt:videoId>
-    <title>الحب العظيم الحلقة 1 | Official</title>
+    <title>Great Love Episode 1 | Official</title>
   </entry>
   <entry>
     <yt:videoId>videoA2</yt:videoId>
-    <title>الحب العظيم الحلقة 2 | Official</title>
+    <title>Great Love Episode 2 | Official</title>
   </entry>
   <entry>
     <yt:videoId>videoB1</yt:videoId>
-    <title>سر المدينة الحلقة 1 | Official</title>
+    <title>City Secret Episode 1 | Official</title>
   </entry>
 </feed>''',
             200,
@@ -43,11 +43,11 @@ void main() {
     final catalog = await provider.browse();
 
     expect(catalog, hasLength(2));
-    expect(catalog.map((item) => item.title), contains('الحب العظيم'));
-    expect(catalog.map((item) => item.title), contains('سر المدينة'));
+    expect(catalog.map((item) => item.title), contains('Great Love'));
+    expect(catalog.map((item) => item.title), contains('City Secret'));
 
     final firstSeries = catalog.firstWhere(
-      (item) => item.title == 'الحب العظيم',
+      (item) => item.title == 'Great Love',
     );
     final episodes = await provider.getEpisodes(firstSeries.id);
     expect(episodes, hasLength(2));

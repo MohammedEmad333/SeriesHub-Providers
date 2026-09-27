@@ -8,3 +8,5 @@ export 'src/providers/watanflix/watanflix_provider.dart';
 
 export 'src/providers/roya/roya_parser.dart';
 export 'src/providers/roya/roya_provider.dart';
+
+export 'src/providers/youtube/official_youtube_provider.dart';

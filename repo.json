@@ -1,0 +1,9 @@
+{
+  "meta": {
+    "name": "SeriesHub Providers",
+    "shortName": "SeriesHub",
+    "version": 1,
+    "website": "https://github.com/MohammedEmad333/SeriesHub-Providers",
+    "index": "index.min.json"
+  }
+}

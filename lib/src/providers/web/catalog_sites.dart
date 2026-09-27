@@ -9,6 +9,40 @@ class LarozaProvider extends SimplePublicCatalogProvider {
           baseUri: Uri.parse('https://llaroza.click/'),
           homePath: 'home.24',
         );
+
+  @override
+  Future<List<SourcePlayback>> getPlaybackSources(String episodeId) async {
+    final itemUri = Uri.tryParse(episodeId);
+    if (itemUri == null || !itemUri.hasScheme) return const [];
+
+    final direct = await resolvePublicPlayback(itemUri, maxEmbeds: 8);
+    if (direct.isNotEmpty) return direct;
+
+    // Laroza pages may expose a separate public watch/player/server route.
+    // Follow same-site candidates only, then use the shared direct-media
+    // resolver without bypassing protected player flows.
+    final html = await fetchText(itemUri);
+    final candidates = <Uri>{};
+    for (final match in RegExp(
+      r'''href=["']([^"']*(?:watch|player|video|server|play)[^"']*)["']''',
+      caseSensitive: false,
+    ).allMatches(html)) {
+      final value = match.group(1);
+      if (value == null || value.isEmpty) continue;
+      final uri = itemUri.resolve(value.replaceAll('&amp;', '&'));
+      if (uri.host == itemUri.host) candidates.add(uri);
+    }
+
+    for (final uri in candidates.take(6)) {
+      try {
+        final sources = await resolvePublicPlayback(uri, maxEmbeds: 8);
+        if (sources.isNotEmpty) return sources;
+      } on Object {
+        // Try the next public candidate.
+      }
+    }
+    return const [];
+  }
 }
 
 class ElCinemaProvider extends SimplePublicCatalogProvider {
@@ -18,6 +52,15 @@ class ElCinemaProvider extends SimplePublicCatalogProvider {
           name: 'elCinema',
           baseUri: Uri.parse('https://elcinema.com/'),
         );
+
+  @override
+  Future<List<SourcePlayback>> getPlaybackSources(String episodeId) async {
+    // elCinema is primarily a metadata and viewing-guide source. Its work
+    // pages point users to external platforms rather than exposing a stable
+    // first-party stream, so SeriesHub must not treat those platform links as
+    // direct video URLs.
+    return const [];
+  }
 }
 
 class EgyBestProvider extends SimplePublicCatalogProvider {

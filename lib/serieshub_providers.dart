@@ -12,3 +12,5 @@ export 'src/providers/roya/roya_provider.dart';
 export 'src/providers/youtube/official_youtube_provider.dart';
 
 export 'src/providers/youtube/youku_arabic_provider.dart';
+
+export 'src/providers/youtube/wetv_arabic_provider.dart';

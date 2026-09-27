@@ -9,8 +9,7 @@ class WeTvArabicProvider extends YouTubeChannelProvider {
           name: 'WeTV Arabic',
           seedVideoId: 'W18HzMRooW8',
           fallbackTitle: 'WeTV Arabic',
-          fallbackOverview:
-              'محتوى درامي مترجم من قناة WeTV Arabic الرسمية.',
+          fallbackOverview: 'محتوى درامي مترجم من قناة WeTV Arabic الرسمية.',
           fallbackYear: 2025,
           client: client,
         );

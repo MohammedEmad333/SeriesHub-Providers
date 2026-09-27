@@ -45,7 +45,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
       });
     }
 
-    final html = await _getText(uri);
+    final html = await fetchText(uri);
     return _parseCatalog(html, uri);
   }
 
@@ -63,7 +63,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
   @override
   Future<SourceSeries> getSeries(String seriesId) async {
     final uri = _decodeId(seriesId);
-    final html = await _getText(uri);
+    final html = await fetchText(uri);
     final document = html_parser.parse(html);
 
     final title = _firstText(document, [
@@ -102,7 +102,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
   @override
   Future<List<SourceEpisode>> getEpisodes(String seriesId) async {
     final uri = _decodeId(seriesId);
-    final html = await _getText(uri);
+    final html = await fetchText(uri);
     final document = html_parser.parse(html);
     final seen = <String>{};
     final episodes = <SourceEpisode>[];
@@ -164,14 +164,20 @@ class SimplePublicCatalogProvider implements SourceProvider {
   Future<List<SourcePlayback>> getPlaybackSources(String episodeId) async {
     final pageUri = Uri.tryParse(episodeId);
     if (pageUri == null || !pageUri.hasScheme) return const [];
+    return resolvePublicPlayback(pageUri);
+  }
 
-    final html = await _getText(pageUri);
-    final direct = _extractPlayback(html, pageUri);
+  Future<List<SourcePlayback>> resolvePublicPlayback(
+    Uri pageUri, {
+    int maxEmbeds = 3,
+  }) async {
+    final html = await fetchText(pageUri);
+    final direct = extractPlayback(html, pageUri);
     if (direct.isNotEmpty) return direct;
 
-    // Follow a small number of publicly exposed embeds and only return direct
-    // media URLs found in their HTML. This does not bypass DRM, tokens,
-    // authentication, anti-bot challenges, or private player APIs.
+    // Follow publicly exposed embeds and only return direct media URLs found
+    // in their HTML. This intentionally does not bypass DRM, authentication,
+    // anti-bot challenges, signed-player handshakes, or private APIs.
     final document = html_parser.parse(html);
     final embeds = document
         .querySelectorAll('iframe[src]')
@@ -179,18 +185,18 @@ class SimplePublicCatalogProvider implements SourceProvider {
         .whereType<String>()
         .map(pageUri.resolve)
         .where((uri) => uri.scheme == 'http' || uri.scheme == 'https')
-        .take(3);
+        .take(maxEmbeds);
 
     final result = <SourcePlayback>[];
     final seen = <String>{};
 
     for (final embedUri in embeds) {
       try {
-        final embedHtml = await _getText(
+        final embedHtml = await fetchText(
           embedUri,
           extraHeaders: {'Referer': pageUri.toString()},
         );
-        for (final source in _extractPlayback(embedHtml, embedUri)) {
+        for (final source in extractPlayback(embedHtml, embedUri)) {
           if (seen.add(source.url.toString())) {
             result.add(
               SourcePlayback(
@@ -280,7 +286,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
     return uri;
   }
 
-  Future<String> _getText(
+  Future<String> fetchText(
     Uri uri, {
     Map<String, String> extraHeaders = const {},
   }) async {
@@ -302,7 +308,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
     return response.body;
   }
 
-  List<SourcePlayback> _extractPlayback(String html, Uri pageUri) {
+  List<SourcePlayback> extractPlayback(String html, Uri pageUri) {
     final document = html_parser.parse(html);
     final result = <SourcePlayback>[];
     final seen = <String>{};

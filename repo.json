@@ -1,9 +1,7 @@
 {
   "meta": {
-    "name": "SeriesHub Providers",
-    "shortName": "SeriesHub",
-    "version": 1,
+    "name": "SeriesHub Movies & Series",
     "website": "https://github.com/MohammedEmad333/SeriesHub-Providers",
-    "index": "index.min.json"
+    "signingKeyFingerprint": "no-info"
   }
 }

@@ -106,10 +106,11 @@ class YouTubeChannelProvider implements SourceProvider {
       );
       _parseFeed(feed);
       _lastRefresh = DateTime.now();
-    } on Object {
-      if (_seriesById.isEmpty) {
-        _installFallback();
-      }
+    } on Object catch (error, stackTrace) {
+      Error.throwWithStackTrace(
+        StateError('YouTube catalog refresh failed: $error'),
+        stackTrace,
+      );
     }
   }
 

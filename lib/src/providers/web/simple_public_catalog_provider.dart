@@ -66,7 +66,8 @@ class SimplePublicCatalogProvider implements SourceProvider {
     final html = await _getText(uri);
     final document = html_parser.parse(html);
 
-    final title = _firstText(document, [
+    final title =
+        _firstText(document, [
           'h1',
           '[itemprop="name"]',
           '.title',
@@ -76,7 +77,8 @@ class SimplePublicCatalogProvider implements SourceProvider {
         uri.pathSegments.lastOrNull ??
         name;
 
-    final description = _meta(document, 'description') ??
+    final description =
+        _meta(document, 'description') ??
         _firstText(document, [
           '[itemprop="description"]',
           '.description',
@@ -259,9 +261,8 @@ class SimplePublicCatalogProvider implements SourceProvider {
   }
 
   static String? _meta(Document document, String name) {
-    final value = document
-        .querySelector('meta[name="$name"]')
-        ?.attributes['content'];
+    final value =
+        document.querySelector('meta[name="$name"]')?.attributes['content'];
     final cleaned = _clean(value ?? '');
     return cleaned.isEmpty ? null : cleaned;
   }

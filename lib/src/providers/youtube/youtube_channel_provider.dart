@@ -129,16 +129,14 @@ class YouTubeChannelProvider implements SourceProvider {
   }
 
   Future<String> _get(Uri uri) async {
-    final response = await _client
-        .get(
-          uri,
-          headers: const {
-            'User-Agent':
-                'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/124.0 Mobile Safari/537.36',
-            'Accept-Language': 'ar,en;q=0.8',
-          },
-        )
-        .timeout(const Duration(seconds: 15));
+    final response = await _client.get(
+      uri,
+      headers: const {
+        'User-Agent':
+            'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 Chrome/124.0 Mobile Safari/537.36',
+        'Accept-Language': 'ar,en;q=0.8',
+      },
+    ).timeout(const Duration(seconds: 15));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw http.ClientException(
@@ -192,8 +190,7 @@ class YouTubeChannelProvider implements SourceProvider {
     _episodesBySeries.clear();
 
     for (final videos in groups.values) {
-      final sorted = [...videos]
-        ..sort((a, b) {
+      final sorted = [...videos]..sort((a, b) {
           final an = a.episodeNumber;
           final bn = b.episodeNumber;
           if (an != null && bn != null) return an.compareTo(bn);

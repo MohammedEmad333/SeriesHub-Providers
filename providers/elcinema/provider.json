@@ -1,0 +1,20 @@
+{
+  "id": "elcinema",
+  "name": "elCinema",
+  "version": 1,
+  "minAppVersion": "0.15.0",
+  "enabled": true,
+  "status": "metadata_only",
+  "capabilities": {
+    "browse": true,
+    "search": true,
+    "details": true,
+    "episodes": true,
+    "playback": false
+  },
+  "entrypoint": {
+    "type": "builtin",
+    "class": "ElCinemaProvider"
+  },
+  "notes": "Public catalog/metadata integration only. Third-party stream URLs are not extracted."
+}

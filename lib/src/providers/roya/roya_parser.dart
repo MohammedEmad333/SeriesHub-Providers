@@ -90,9 +90,7 @@ class RoyaParser {
 
       final image = anchor.querySelector('img');
       final title = _clean(
-        anchor.attributes['title'] ??
-            image?.attributes['alt'] ??
-            anchor.text,
+        anchor.attributes['title'] ?? image?.attributes['alt'] ?? anchor.text,
       );
       final numberMatch = RegExp(
         r'(?:episode|الحلقة)\s*0*(\d+)',

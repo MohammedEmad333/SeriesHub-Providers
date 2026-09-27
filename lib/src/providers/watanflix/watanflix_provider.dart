@@ -11,7 +11,7 @@ class WatanFlixProvider implements SourceProvider {
     http.Client? client,
     WatanFlixParser parser = const WatanFlixParser(),
     Uri? baseUri,
-  }) : _client = client ?? http.Client(),
+  })  : _client = client ?? http.Client(),
         _parser = parser,
         _baseUri = baseUri ?? Uri.parse('https://www.watanflix.com/ar/');
 

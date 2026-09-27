@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "generatedAt": "2026-09-28",
+  "providers": [
+    {
+      "id": "official-youtube",
+      "name": "YouTube الرسمي",
+      "version": 1,
+      "enabled": true,
+      "status": "working",
+      "playback": true,
+      "languages": [
+        "ar"
+      ],
+      "types": [
+        "subtitled"
+      ],
+      "manifest": "providers/official-youtube/provider.json"
+    },
+    {
+      "id": "roya",
+      "name": "Roya TV",
+      "version": 1,
+      "enabled": true,
+      "status": "metadata_only",
+      "playback": false,
+      "languages": [
+        "ar"
+      ],
+      "types": [
+        "arabic"
+      ],
+      "manifest": "providers/roya/provider.json"
+    },
+    {
+      "id": "watanflix",
+      "name": "WatanFlix",
+      "version": 1,
+      "enabled": true,
+      "status": "metadata_only",
+      "playback": false,
+      "languages": [
+        "ar"
+      ],
+      "types": [
+        "arabic"
+      ],
+      "manifest": "providers/watanflix/provider.json"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ void main() {
         if (request.url.path == '/feeds/videos.xml') {
           return http.Response(
             '''<?xml version="1.0" encoding="UTF-8"?>
-<feed>
+<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015">
   <entry>
     <yt:videoId>videoA1</yt:videoId>
     <title>الحب العظيم الحلقة 1 | Official</title>

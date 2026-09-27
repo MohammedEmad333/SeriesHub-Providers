@@ -1,0 +1,20 @@
+{
+  "id": "cima4u",
+  "name": "Cima4u",
+  "version": 1,
+  "minAppVersion": "0.15.0",
+  "enabled": true,
+  "status": "experimental",
+  "capabilities": {
+    "browse": true,
+    "search": true,
+    "details": true,
+    "episodes": true,
+    "playback": false
+  },
+  "entrypoint": {
+    "type": "builtin",
+    "class": "Cima4uProvider"
+  },
+  "notes": "Public catalog/metadata integration only. Third-party stream URLs are not extracted."
+}

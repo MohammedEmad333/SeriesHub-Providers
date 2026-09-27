@@ -4,7 +4,8 @@ import 'package:serieshub_providers/serieshub_providers.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('$label builds multiple series from the official YouTube feed', () async {
+  test('WeTV Arabic builds multiple series from the official YouTube feed',
+      () async {
     final provider = WeTvArabicProvider(
       client: MockClient((request) async {
         if (request.url.path == '/watch') {
@@ -58,7 +59,8 @@ void main() {
     expect(sources.single.url.queryParameters['v'], 'videoA1');
   });
 
-  test('$label falls back to the seed title when the feed is unavailable', () async {
+  test('WeTV Arabic falls back to the seed title when the feed is unavailable',
+      () async {
     final provider = WeTvArabicProvider(
       client: MockClient((_) async => http.Response('not found', 404)),
     );

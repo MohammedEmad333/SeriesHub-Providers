@@ -2,65 +2,105 @@ import 'dart:convert';
 import 'dart:io';
 
 void main() {
-  final repo = _readJson('repo.json');
-  final index = _readJson('index.json');
-  final minIndex = _readJson('index.min.json');
+  final repo = _readMap('repo.json');
+  final index = _readList('index.json');
+  final minIndex = _readList('index.min.json');
 
   final meta = repo['meta'];
-  if (meta is! Map || meta['index'] != 'index.min.json') {
-    _fail('repo.json meta.index must point to index.min.json');
+  if (meta is! Map) {
+    _fail('repo.json must contain meta');
   }
 
-  if (index['version'] != 1 || minIndex['version'] != 1) {
-    _fail('Unsupported repository index version');
+  for (final key in ['name', 'website', 'signingKeyFingerprint']) {
+    if (meta[key] is! String || (meta[key] as String).isEmpty) {
+      _fail('repo.json meta.$key must be a non-empty string');
+    }
   }
 
-  final providers = index['providers'];
-  final minProviders = minIndex['providers'];
-  if (providers is! List || minProviders is! List) {
-    _fail('providers must be a list');
-  }
-
-  if (jsonEncode(providers) != jsonEncode(minProviders)) {
-    _fail('index.json and index.min.json provider lists differ');
+  if (jsonEncode(index) != jsonEncode(minIndex)) {
+    _fail('index.json and index.min.json differ');
   }
 
   final ids = <String>{};
-  for (final value in providers) {
+  final packages = <String>{};
+
+  for (final value in index) {
     if (value is! Map<String, dynamic>) {
-      _fail('Each provider must be an object');
+      _fail('Each extension entry must be an object');
     }
 
     final id = value['id'];
+    final pkg = value['pkg'];
     final manifestPath = value['manifest'];
+    final sources = value['sources'];
+
     if (id is! String || id.isEmpty || !ids.add(id)) {
-      _fail('Provider IDs must be unique non-empty strings');
-    }
-    if (manifestPath is! String || manifestPath.isEmpty) {
-      _fail('Provider $id is missing manifest');
+      _fail('Extension ids must be unique non-empty strings');
     }
 
-    final manifest = _readJson(manifestPath);
+    if (pkg is! String || pkg.isEmpty || !packages.add(pkg)) {
+      _fail('Extension packages must be unique non-empty strings');
+    }
+
+    if (value['artifact'] != 'builtin') {
+      _fail('Extension $id must use artifact=builtin');
+    }
+
+    if (manifestPath is! String || manifestPath.isEmpty) {
+      _fail('Extension $id is missing manifest');
+    }
+
+    if (sources is! List || sources.isEmpty) {
+      _fail('Extension $id must declare at least one source');
+    }
+
+    for (final source in sources) {
+      if (source is! Map<String, dynamic>) {
+        _fail('Extension $id has an invalid source entry');
+      }
+      for (final key in ['name', 'lang', 'id', 'baseUrl']) {
+        if (source[key] is! String || (source[key] as String).isEmpty) {
+          _fail('Extension $id source.$key must be a non-empty string');
+        }
+      }
+    }
+
+    final manifest = _readMap(manifestPath);
     if (manifest['id'] != id) {
       _fail('Manifest ID mismatch for $id');
     }
 
     final entrypoint = manifest['entrypoint'];
     if (entrypoint is! Map || entrypoint['type'] != 'builtin') {
-      _fail('Provider $id must use a builtin entrypoint');
+      _fail('Extension $id must use a builtin entrypoint');
     }
   }
 
-  stdout.writeln('Repository metadata valid: ${ids.length} providers.');
+  stdout.writeln(
+    'Repository metadata valid: ${ids.length} movie/series sources.',
+  );
 }
 
-Map<String, dynamic> _readJson(String path) {
+Map<String, dynamic> _readMap(String path) {
+  final decoded = _readJson(path);
+  if (decoded is! Map<String, dynamic>) {
+    _fail('$path must contain an object');
+  }
+  return decoded;
+}
+
+List<dynamic> _readList(String path) {
+  final decoded = _readJson(path);
+  if (decoded is! List) {
+    _fail('$path must contain an array');
+  }
+  return decoded;
+}
+
+dynamic _readJson(String path) {
   final file = File(path);
   if (!file.existsSync()) _fail('Missing $path');
-
-  final decoded = jsonDecode(file.readAsStringSync());
-  if (decoded is! Map<String, dynamic>) _fail('$path must contain an object');
-  return decoded;
+  return jsonDecode(file.readAsStringSync());
 }
 
 Never _fail(String message) {

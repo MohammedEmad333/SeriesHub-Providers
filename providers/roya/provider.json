@@ -1,0 +1,20 @@
+{
+  "id": "roya",
+  "name": "Roya TV",
+  "version": 1,
+  "minAppVersion": "0.10.0",
+  "enabled": true,
+  "status": "metadata_only",
+  "capabilities": {
+    "browse": true,
+    "search": true,
+    "details": true,
+    "episodes": true,
+    "playback": false
+  },
+  "entrypoint": {
+    "type": "builtin",
+    "class": "RoyaProvider"
+  },
+  "notes": "Public catalog and episode metadata only; no stable public direct playback URL is exposed."
+}

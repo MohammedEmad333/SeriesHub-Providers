@@ -1,0 +1,20 @@
+{
+  "id": "official-youtube",
+  "name": "YouTube الرسمي",
+  "version": 1,
+  "minAppVersion": "0.10.0",
+  "enabled": true,
+  "status": "working",
+  "capabilities": {
+    "browse": true,
+    "search": true,
+    "details": true,
+    "episodes": true,
+    "playback": true
+  },
+  "entrypoint": {
+    "type": "builtin",
+    "class": "OfficialYouTubeProvider"
+  },
+  "notes": "Curated public videos from official channels. Availability is checked before playback."
+}

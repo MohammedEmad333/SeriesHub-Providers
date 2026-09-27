@@ -136,7 +136,7 @@
     "hasChangelog": 0,
     "enabled": true,
     "status": "experimental",
-    "playback": false,
+    "playback": true,
     "manifest": "providers/laroza/provider.json",
     "sources": [
       {
@@ -160,8 +160,8 @@
     "hasReadme": 0,
     "hasChangelog": 0,
     "enabled": true,
-    "status": "metadata_only",
-    "playback": false,
+    "status": "experimental",
+    "playback": true,
     "manifest": "providers/elcinema/provider.json",
     "sources": [
       {
@@ -186,7 +186,7 @@
     "hasChangelog": 0,
     "enabled": true,
     "status": "experimental",
-    "playback": false,
+    "playback": true,
     "manifest": "providers/egibest/provider.json",
     "sources": [
       {
@@ -211,7 +211,7 @@
     "hasChangelog": 0,
     "enabled": true,
     "status": "experimental",
-    "playback": false,
+    "playback": true,
     "manifest": "providers/cima4u/provider.json",
     "sources": [
       {
@@ -236,7 +236,7 @@
     "hasChangelog": 0,
     "enabled": true,
     "status": "experimental",
-    "playback": false,
+    "playback": true,
     "manifest": "providers/dramacafe/provider.json",
     "sources": [
       {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
+import 'package:xml/xml.dart';
 
 import '../../models/source_models.dart';
 import '../../provider/source_provider.dart';
@@ -149,22 +150,24 @@ class YouTubeChannelProvider implements SourceProvider {
   }
 
   void _parseFeed(String xml) {
+    final document = XmlDocument.parse(xml);
     final groups = <String, List<_FeedVideo>>{};
 
-    for (final match in RegExp(
-      r'<entry>([\s\S]*?)</entry>',
-      caseSensitive: false,
-    ).allMatches(xml)) {
-      final entry = match.group(1)!;
-      final id = _first(
-        entry,
-        r'<yt:videoId>([^<]+)</yt:videoId>',
-      );
-      final rawTitle = _first(
-        entry,
-        r'<title>([\s\S]*?)</title>',
-      );
+    for (final entry in document.descendants.whereType<XmlElement>().where(
+          (element) => element.name.local == 'entry',
+        )) {
+      String? childText(String localName) {
+        for (final element in entry.descendants.whereType<XmlElement>()) {
+          if (element.name.local == localName) {
+            final value = element.innerText.trim();
+            if (value.isNotEmpty) return value;
+          }
+        }
+        return null;
+      }
 
+      final id = childText('videoId');
+      final rawTitle = childText('title');
       if (id == null || rawTitle == null) continue;
 
       final title = _decodeXml(rawTitle);

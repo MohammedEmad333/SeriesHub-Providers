@@ -102,8 +102,7 @@ class WatanFlixParser {
       final href = anchor.attributes['href'];
       if (href == null) continue;
 
-      final looksLikeEpisode =
-          href.contains('/episode/') ||
+      final looksLikeEpisode = href.contains('/episode/') ||
           href.contains('/watch/') ||
           RegExp(r'(الحلقة|episode)\s*\d+', caseSensitive: false)
               .hasMatch(text);
@@ -162,8 +161,7 @@ class WatanFlixParser {
   ) {
     for (final selector in selectors) {
       final image = document.querySelector(selector);
-      final value =
-          image?.attributes['data-src'] ?? image?.attributes['src'];
+      final value = image?.attributes['data-src'] ?? image?.attributes['src'];
       final resolved = _resolveOptional(baseUri, value);
       if (resolved != null) return resolved;
     }

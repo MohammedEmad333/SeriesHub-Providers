@@ -1,0 +1,20 @@
+{
+  "id": "dramacafe",
+  "name": "DramaCafe",
+  "version": 1,
+  "minAppVersion": "0.15.0",
+  "enabled": true,
+  "status": "experimental",
+  "capabilities": {
+    "browse": true,
+    "search": true,
+    "details": true,
+    "episodes": true,
+    "playback": false
+  },
+  "entrypoint": {
+    "type": "builtin",
+    "class": "DramaCafeProvider"
+  },
+  "notes": "Public catalog/metadata integration only. Third-party stream URLs are not extracted."
+}

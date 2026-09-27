@@ -22,9 +22,8 @@ class WatanFlixProvider implements SourceProvider {
   static const _headers = <String, String>{
     'Accept': 'text/html,application/xhtml+xml',
     'Accept-Language': 'ar,en;q=0.8',
-    'User-Agent':
-        'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 '
-            '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/124.0 Mobile Safari/537.36',
   };
 
   @override

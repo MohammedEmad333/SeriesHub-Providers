@@ -6,7 +6,8 @@ import '../../models/source_models.dart';
 import '../../provider/source_provider.dart';
 
 class YoukuArabicProvider implements SourceProvider {
-  YoukuArabicProvider({http.Client? client}) : _client = client ?? http.Client();
+  YoukuArabicProvider({http.Client? client})
+      : _client = client ?? http.Client();
 
   final http.Client _client;
 

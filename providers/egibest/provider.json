@@ -10,11 +10,11 @@
     "search": true,
     "details": true,
     "episodes": true,
-    "playback": false
+    "playback": true
   },
   "entrypoint": {
     "type": "builtin",
     "class": "EgyBestProvider"
   },
-  "notes": "Public catalog/metadata integration only. Third-party stream URLs are not extracted."
+  "notes": "Playback resolves only direct publicly exposed HLS/DASH/MP4/WebM URLs from episode pages or public embeds. No DRM/token/authentication/anti-bot/private API bypass."
 }

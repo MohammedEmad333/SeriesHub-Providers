@@ -1,0 +1,20 @@
+{
+  "id": "wetv-arabic",
+  "name": "WeTV Arabic",
+  "version": 1,
+  "minAppVersion": "0.14.0",
+  "enabled": true,
+  "status": "working",
+  "capabilities": {
+    "browse": true,
+    "search": true,
+    "details": true,
+    "episodes": true,
+    "playback": true
+  },
+  "entrypoint": {
+    "type": "builtin",
+    "class": "WeTvArabicProvider"
+  },
+  "notes": "Curated public full episodes from the verified WeTV Arabic YouTube channel. Availability is checked before playback."
+}

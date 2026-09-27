@@ -33,6 +33,21 @@
       "manifest": "providers/youku-arabic/provider.json"
     },
     {
+      "id": "wetv-arabic",
+      "name": "WeTV Arabic",
+      "version": 1,
+      "enabled": true,
+      "status": "working",
+      "playback": true,
+      "languages": [
+        "ar"
+      ],
+      "types": [
+        "subtitled"
+      ],
+      "manifest": "providers/wetv-arabic/provider.json"
+    },
+    {
       "id": "roya",
       "name": "Roya TV",
       "version": 1,

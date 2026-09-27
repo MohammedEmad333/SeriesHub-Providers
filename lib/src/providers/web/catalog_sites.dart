@@ -1,3 +1,4 @@
+import '../../models/source_models.dart';
 import 'simple_public_catalog_provider.dart';
 
 class LarozaProvider extends SimplePublicCatalogProvider {
@@ -24,8 +25,37 @@ class EgyBestProvider extends SimplePublicCatalogProvider {
       : super(
           id: 'egibest',
           name: 'EgyBest',
-          baseUri: Uri.parse('https://egibest.com/'),
+          baseUri: Uri.parse('https://w1.egibest.com/'),
         );
+
+  @override
+  Future<List<SourcePlayback>> getPlaybackSources(String episodeId) async {
+    final pageUri = Uri.tryParse(episodeId);
+    if (pageUri == null || !pageUri.hasScheme) return const [];
+
+    final direct = await resolvePublicPlayback(pageUri, maxEmbeds: 6);
+    if (direct.isNotEmpty) return direct;
+
+    // EgyBest commonly separates item and watch pages. Follow only public
+    // same-site watch routes and let the shared resolver inspect public media.
+    final html = await fetchText(pageUri);
+    final candidates = <Uri>{};
+    for (final match in RegExp(
+      r'''href=["']([^"']*(?:watch|view|play)[^"']*)["']''',
+      caseSensitive: false,
+    ).allMatches(html)) {
+      final value = match.group(1);
+      if (value == null || value.isEmpty) continue;
+      final uri = pageUri.resolve(value.replaceAll('&amp;', '&'));
+      if (uri.host == pageUri.host) candidates.add(uri);
+    }
+
+    for (final uri in candidates.take(4)) {
+      final sources = await resolvePublicPlayback(uri, maxEmbeds: 6);
+      if (sources.isNotEmpty) return sources;
+    }
+    return const [];
+  }
 }
 
 class Cima4uProvider extends SimplePublicCatalogProvider {
@@ -35,6 +65,25 @@ class Cima4uProvider extends SimplePublicCatalogProvider {
           name: 'Cima4u',
           baseUri: Uri.parse('https://c4u.top/'),
         );
+
+  @override
+  Future<List<SourcePlayback>> getPlaybackSources(String episodeId) async {
+    final itemUri = Uri.tryParse(episodeId);
+    if (itemUri == null || !itemUri.hasScheme) return const [];
+
+    // Cima4u exposes a dedicated public watch page using ?wat=1.
+    final watchUri = itemUri.replace(
+      queryParameters: {
+        ...itemUri.queryParameters,
+        'wat': '1',
+      },
+    );
+
+    final watchSources = await resolvePublicPlayback(watchUri, maxEmbeds: 8);
+    if (watchSources.isNotEmpty) return watchSources;
+
+    return resolvePublicPlayback(itemUri, maxEmbeds: 4);
+  }
 }
 
 class DramaCafeProvider extends SimplePublicCatalogProvider {
@@ -44,4 +93,14 @@ class DramaCafeProvider extends SimplePublicCatalogProvider {
           name: 'DramaCafe',
           baseUri: Uri.parse('https://www.dramacafe.co/'),
         );
+
+  @override
+  Future<List<SourcePlayback>> getPlaybackSources(String episodeId) async {
+    final watchUri = Uri.tryParse(episodeId);
+    if (watchUri == null || !watchUri.hasScheme) return const [];
+
+    // DramaCafe watch pages expose the player on the /watch/ route. Inspect
+    // public embeds and media declarations with a larger server allowance.
+    return resolvePublicPlayback(watchUri, maxEmbeds: 8);
+  }
 }

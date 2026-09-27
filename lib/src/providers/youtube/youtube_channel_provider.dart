@@ -270,10 +270,6 @@ class YouTubeChannelProvider implements SourceProvider {
     _lastRefresh = DateTime.now();
   }
 
-  static String? _first(String input, String pattern) {
-    return RegExp(pattern, caseSensitive: false).firstMatch(input)?.group(1);
-  }
-
   static int? _episodeNumber(String title) {
     final patterns = [
       RegExp(r'(?:الحلقة|حلقة)\s*[-:#]?\s*(\d+)', caseSensitive: false),

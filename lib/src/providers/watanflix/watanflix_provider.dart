@@ -74,10 +74,25 @@ class WatanFlixProvider implements SourceProvider {
 
   @override
   Future<List<SourcePlayback>> getPlaybackSources(String episodeId) async {
-    // Intentionally conservative: do not guess private player APIs or scrape
-    // protected stream URLs. A playback resolver can be added when a stable,
-    // publicly exposed/authorized resource is verified.
-    return const [];
+    final uri = Uri.tryParse(episodeId);
+    if (uri == null) return const [];
+
+    final host = uri.host.toLowerCase();
+    final isYoutube =
+        host == 'youtube.com' ||
+        host == 'www.youtube.com' ||
+        host == 'm.youtube.com' ||
+        host == 'youtu.be';
+
+    if (!isYoutube) return const [];
+
+    return [
+      SourcePlayback(
+        url: uri,
+        label: 'YouTube',
+        mimeType: 'video/youtube',
+      ),
+    ];
   }
 
   Uri _seriesUri(String seriesId) => _baseUri.resolve(

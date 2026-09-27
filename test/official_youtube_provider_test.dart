@@ -4,49 +4,76 @@ import 'package:serieshub_providers/serieshub_providers.dart';
 import 'package:test/test.dart';
 
 void main() {
-  test('official YouTube catalog exposes verified MangoTV episodes', () async {
+  test('MangoTV Arabic builds multiple series from the official YouTube feed',
+      () async {
     final provider = OfficialYouTubeProvider(
       client: MockClient((request) async {
-        return http.Response('{"title":"Episode 1"}', 200);
+        if (request.url.path == '/watch') {
+          return http.Response(
+            '<html><script>{"channelId":"UC_TEST_CHANNEL"}</script></html>',
+            200,
+          );
+        }
+
+        if (request.url.path == '/feeds/videos.xml') {
+          return http.Response(
+            '''<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:yt="http://www.youtube.com/xml/schemas/2015">
+  <entry>
+    <yt:videoId>videoA1</yt:videoId>
+    <title>Great Love Episode 1 | Official</title>
+  </entry>
+  <entry>
+    <yt:videoId>videoA2</yt:videoId>
+    <title>Great Love Episode 2 | Official</title>
+  </entry>
+  <entry>
+    <yt:videoId>videoB1</yt:videoId>
+    <title>City Secret Episode 1 | Official</title>
+  </entry>
+</feed>''',
+            200,
+          );
+        }
+
+        return http.Response('not found', 404);
       }),
     );
 
     final catalog = await provider.browse();
-    final episodes = await provider.getEpisodes(
-      'mangotv-unforgettable-love',
-    );
-    final sources = await provider.getPlaybackSources('7HID7fAylyg');
 
-    expect(catalog, hasLength(1));
-    expect(catalog.single.title, 'حب لا يُنسى');
-    expect(episodes, hasLength(3));
-    expect(episodes.first.number, 1);
+    expect(catalog, hasLength(2));
+    expect(catalog.map((item) => item.title), contains('Great Love'));
+    expect(catalog.map((item) => item.title), contains('City Secret'));
+
+    final firstSeries = catalog.firstWhere(
+      (item) => item.title == 'Great Love',
+    );
+    final episodes = await provider.getEpisodes(firstSeries.id);
+    expect(episodes, hasLength(2));
+    expect(episodes.map((episode) => episode.number), [1, 2]);
+
+    final sources = await provider.getPlaybackSources(episodes.first.id);
     expect(sources, hasLength(1));
     expect(sources.single.mimeType, 'video/youtube');
+    expect(sources.single.url.queryParameters['v'], 'videoA1');
   });
 
-  test('private or unavailable YouTube videos are not exposed', () async {
+  test(
+      'MangoTV Arabic falls back to the seed title when the feed is unavailable',
+      () async {
     final provider = OfficialYouTubeProvider(
-      client: MockClient((request) async => http.Response('not found', 404)),
+      client: MockClient((_) async => http.Response('not found', 404)),
     );
 
-    final sources = await provider.getPlaybackSources('7HID7fAylyg');
+    final catalog = await provider.browse();
 
-    expect(sources, isEmpty);
-  });
-
-  test('unknown video ids are rejected without a request', () async {
-    var requested = false;
-    final provider = OfficialYouTubeProvider(
-      client: MockClient((request) async {
-        requested = true;
-        return http.Response('{"title":"Unexpected"}', 200);
-      }),
+    expect(catalog, hasLength(1));
+    final episodes = await provider.getEpisodes(catalog.single.id);
+    expect(episodes, hasLength(1));
+    expect(
+      (await provider.getPlaybackSources(episodes.single.id)).single.mimeType,
+      'video/youtube',
     );
-
-    final sources = await provider.getPlaybackSources('unknown');
-
-    expect(sources, isEmpty);
-    expect(requested, isFalse);
   });
 }

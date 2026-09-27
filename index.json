@@ -18,6 +18,21 @@
       "manifest": "providers/official-youtube/provider.json"
     },
     {
+      "id": "youku-arabic",
+      "name": "YOUKU Arabic",
+      "version": 1,
+      "enabled": true,
+      "status": "working",
+      "playback": true,
+      "languages": [
+        "ar"
+      ],
+      "types": [
+        "subtitled"
+      ],
+      "manifest": "providers/youku-arabic/provider.json"
+    },
+    {
       "id": "roya",
       "name": "Roya TV",
       "version": 1,

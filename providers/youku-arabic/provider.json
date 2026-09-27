@@ -1,0 +1,20 @@
+{
+  "id": "youku-arabic",
+  "name": "YOUKU Arabic",
+  "version": 1,
+  "minAppVersion": "0.13.0",
+  "enabled": true,
+  "status": "working",
+  "capabilities": {
+    "browse": true,
+    "search": true,
+    "details": true,
+    "episodes": true,
+    "playback": true
+  },
+  "entrypoint": {
+    "type": "builtin",
+    "class": "YoukuArabicProvider"
+  },
+  "notes": "Curated full public episodes from the verified YOUKU Arabic YouTube channel. Availability is checked before playback."
+}

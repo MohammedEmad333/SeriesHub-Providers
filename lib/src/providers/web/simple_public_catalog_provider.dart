@@ -164,10 +164,55 @@ class SimplePublicCatalogProvider implements SourceProvider {
 
   @override
   Future<List<SourcePlayback>> getPlaybackSources(String episodeId) async {
-    // Metadata-only integration. Stream URLs are intentionally not extracted
-    // from third-party players; playback can be added only for verified,
-    // publicly exposed and authorized media endpoints.
-    return const [];
+    final pageUri = Uri.tryParse(episodeId);
+    if (pageUri == null || !pageUri.hasScheme) return const [];
+
+    final html = await _getText(pageUri);
+    final direct = _extractPlayback(html, pageUri);
+    if (direct.isNotEmpty) return direct;
+
+    // Follow a small number of publicly exposed embeds and only return direct
+    // media URLs found in their HTML. This does not bypass DRM, tokens,
+    // authentication, anti-bot challenges, or private player APIs.
+    final document = html_parser.parse(html);
+    final embeds = document
+        .querySelectorAll('iframe[src]')
+        .map((element) => element.attributes['src'])
+        .whereType<String>()
+        .map(pageUri.resolve)
+        .where((uri) => uri.scheme == 'http' || uri.scheme == 'https')
+        .take(3);
+
+    final result = <SourcePlayback>[];
+    final seen = <String>{};
+
+    for (final embedUri in embeds) {
+      try {
+        final embedHtml = await _getText(
+          embedUri,
+          extraHeaders: {'Referer': pageUri.toString()},
+        );
+        for (final source in _extractPlayback(embedHtml, embedUri)) {
+          if (seen.add(source.url.toString())) {
+            result.add(
+              SourcePlayback(
+                url: source.url,
+                label: source.label,
+                mimeType: source.mimeType,
+                headers: {
+                  ...source.headers,
+                  'Referer': embedUri.toString(),
+                },
+              ),
+            );
+          }
+        }
+      } on Object {
+        // A blocked/unavailable embed should not break the whole episode.
+      }
+    }
+
+    return result;
   }
 
   List<SourceSeries> _parseCatalog(String html, Uri pageUri) {
@@ -237,9 +282,18 @@ class SimplePublicCatalogProvider implements SourceProvider {
     return uri;
   }
 
-  Future<String> _getText(Uri uri) async {
+  Future<String> _getText(
+    Uri uri, {
+    Map<String, String> extraHeaders = const {},
+  }) async {
     final response = await _client
-        .get(uri, headers: _headers)
+        .get(
+          uri,
+          headers: {
+            ..._headers,
+            ...extraHeaders,
+          },
+        )
         .timeout(const Duration(seconds: 15));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
@@ -250,6 +304,108 @@ class SimplePublicCatalogProvider implements SourceProvider {
     }
 
     return response.body;
+  }
+
+  List<SourcePlayback> _extractPlayback(String html, Uri pageUri) {
+    final document = html_parser.parse(html);
+    final result = <SourcePlayback>[];
+    final seen = <String>{};
+
+    void add(
+      String? value, {
+      String? mimeType,
+      String? label,
+    }) {
+      final raw = value?.trim();
+      if (raw == null || raw.isEmpty) return;
+
+      final decoded = raw
+          .replaceAll(r'\\/', '/')
+          .replaceAll('&amp;', '&');
+      final uri = pageUri.resolve(decoded);
+      if (uri.scheme != 'http' && uri.scheme != 'https') return;
+
+      final path = uri.path.toLowerCase();
+      final inferredMime = mimeType ??
+          (path.endsWith('.m3u8')
+              ? 'application/x-mpegURL'
+              : path.endsWith('.mpd')
+                  ? 'application/dash+xml'
+                  : path.endsWith('.mp4')
+                      ? 'video/mp4'
+                      : path.endsWith('.webm')
+                          ? 'video/webm'
+                          : null);
+
+      if (inferredMime == null &&
+          !RegExp(
+            r'\.(m3u8|mpd|mp4|webm)(?:$|\?)',
+            caseSensitive: false,
+          ).hasMatch(uri.toString())) {
+        return;
+      }
+
+      if (!seen.add(uri.toString())) return;
+      result.add(
+        SourcePlayback(
+          url: uri,
+          label: label ?? _playbackLabel(uri),
+          mimeType: inferredMime,
+          headers: {'Referer': pageUri.toString()},
+        ),
+      );
+    }
+
+    for (final video in document.querySelectorAll('video[src]')) {
+      add(video.attributes['src']);
+    }
+
+    for (final source in document.querySelectorAll('video source[src]')) {
+      add(
+        source.attributes['src'],
+        mimeType: source.attributes['type'],
+        label: source.attributes['label'] ??
+            source.attributes['data-res'],
+      );
+    }
+
+    for (final selector in const [
+      'meta[property="og:video"]',
+      'meta[property="og:video:url"]',
+      'meta[property="og:video:secure_url"]',
+      'meta[itemprop="contentUrl"]',
+    ]) {
+      add(document.querySelector(selector)?.attributes['content']);
+    }
+
+    for (final script in document.querySelectorAll(
+      'script[type="application/ld+json"]',
+    )) {
+      final text = script.text;
+      for (final match in RegExp(
+        r'"(?:contentUrl|embedUrl)"\s*:\s*"([^"]+)"',
+        caseSensitive: false,
+      ).allMatches(text)) {
+        add(match.group(1));
+      }
+    }
+
+    for (final match in RegExp(
+      r'''https?:\\?/\\?/[^"'\s<>]+?\.(?:m3u8|mpd|mp4|webm)(?:\?[^"'\s<>]*)?''',
+      caseSensitive: false,
+    ).allMatches(html)) {
+      add(match.group(0));
+    }
+
+    return result;
+  }
+
+  static String _playbackLabel(Uri uri) {
+    final text = uri.toString().toLowerCase();
+    if (text.contains('.m3u8')) return 'HLS';
+    if (text.contains('.mpd')) return 'DASH';
+    if (text.contains('.webm')) return 'WebM';
+    return 'MP4';
   }
 
   static String? _firstText(Document document, List<String> selectors) {

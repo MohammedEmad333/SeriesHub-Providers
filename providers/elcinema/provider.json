@@ -4,17 +4,17 @@
   "version": 1,
   "minAppVersion": "0.15.0",
   "enabled": true,
-  "status": "experimental",
+  "status": "metadata_only",
   "capabilities": {
     "browse": true,
     "search": true,
     "details": true,
     "episodes": true,
-    "playback": true
+    "playback": false
   },
   "entrypoint": {
     "type": "builtin",
     "class": "ElCinemaProvider"
   },
-  "notes": "Playback resolves only direct publicly exposed HLS/DASH/MP4/WebM URLs from episode pages or public embeds. No DRM/token/authentication/anti-bot/private API bypass."
+  "notes": "Metadata and viewing-guide integration. elCinema points to external platforms; SeriesHub does not treat those platform links as direct streams."
 }

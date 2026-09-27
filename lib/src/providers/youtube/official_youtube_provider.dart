@@ -11,7 +11,7 @@ class OfficialYouTubeProvider implements SourceProvider {
 
   final http.Client _client;
 
-  static const _series = <String, SourceSeries>{
+  static final _series = <String, SourceSeries>{
     'mangotv-unforgettable-love': SourceSeries(
       id: 'mangotv-unforgettable-love',
       title: 'حب لا يُنسى',
@@ -26,7 +26,7 @@ class OfficialYouTubeProvider implements SourceProvider {
     ),
   };
 
-  static const _episodes = <String, List<SourceEpisode>>{
+  static final _episodes = <String, List<SourceEpisode>>{
     'mangotv-unforgettable-love': [
       SourceEpisode(
         id: '7HID7fAylyg',

@@ -21,7 +21,8 @@
         "baseUrl": "https://www.youtube.com",
         "versionId": 1
       }
-    ]
+    ],
+    "id": "official-youtube"
   },
   {
     "name": "SeriesHub: YOUKU Arabic",
@@ -45,7 +46,8 @@
         "baseUrl": "https://www.youtube.com",
         "versionId": 1
       }
-    ]
+    ],
+    "id": "youku-arabic"
   },
   {
     "name": "SeriesHub: WeTV Arabic",
@@ -69,7 +71,8 @@
         "baseUrl": "https://www.youtube.com",
         "versionId": 1
       }
-    ]
+    ],
+    "id": "wetv-arabic"
   },
   {
     "name": "SeriesHub: Roya TV",
@@ -93,7 +96,8 @@
         "baseUrl": "https://en.roya.tv",
         "versionId": 1
       }
-    ]
+    ],
+    "id": "roya"
   },
   {
     "name": "SeriesHub: WatanFlix",
@@ -117,6 +121,7 @@
         "baseUrl": "https://www.watanflix.com",
         "versionId": 1
       }
-    ]
+    ],
+    "id": "watanflix"
   }
 ]

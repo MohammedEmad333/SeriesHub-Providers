@@ -66,8 +66,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
     final html = await _getText(uri);
     final document = html_parser.parse(html);
 
-    final title =
-        _firstText(document, [
+    final title = _firstText(document, [
           'h1',
           '[itemprop="name"]',
           '.title',
@@ -77,8 +76,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
         uri.pathSegments.lastOrNull ??
         name;
 
-    final description =
-        _meta(document, 'description') ??
+    final description = _meta(document, 'description') ??
         _firstText(document, [
           '[itemprop="description"]',
           '.description',
@@ -286,15 +284,13 @@ class SimplePublicCatalogProvider implements SourceProvider {
     Uri uri, {
     Map<String, String> extraHeaders = const {},
   }) async {
-    final response = await _client
-        .get(
-          uri,
-          headers: {
-            ..._headers,
-            ...extraHeaders,
-          },
-        )
-        .timeout(const Duration(seconds: 15));
+    final response = await _client.get(
+      uri,
+      headers: {
+        ..._headers,
+        ...extraHeaders,
+      },
+    ).timeout(const Duration(seconds: 15));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw http.ClientException(
@@ -319,9 +315,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
       final raw = value?.trim();
       if (raw == null || raw.isEmpty) return;
 
-      final decoded = raw
-          .replaceAll(r'\\/', '/')
-          .replaceAll('&amp;', '&');
+      final decoded = raw.replaceAll(r'\\/', '/').replaceAll('&amp;', '&');
       final uri = pageUri.resolve(decoded);
       if (uri.scheme != 'http' && uri.scheme != 'https') return;
 
@@ -364,8 +358,7 @@ class SimplePublicCatalogProvider implements SourceProvider {
       add(
         source.attributes['src'],
         mimeType: source.attributes['type'],
-        label: source.attributes['label'] ??
-            source.attributes['data-res'],
+        label: source.attributes['label'] ?? source.attributes['data-res'],
       );
     }
 

@@ -68,7 +68,7 @@ class EgyBestProvider extends SimplePublicCatalogProvider {
       : super(
           id: 'egibest',
           name: 'EgyBest',
-          baseUri: Uri.parse('https://w1.egibest.com/'),
+          baseUri: Uri.parse('https://egibest.com/'),
         );
 
   @override

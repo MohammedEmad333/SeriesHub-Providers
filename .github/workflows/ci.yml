@@ -15,10 +15,6 @@ jobs:
           sdk: stable
       - run: dart pub get
       - run: dart run tool/validate_repository.dart
-      - run: |
-          dart format --output=show lib/src/providers/web/site_specific_helpers.dart
-          echo '---FORMATTED FILE---'
-          cat lib/src/providers/web/site_specific_helpers.dart
-          exit 1
+      - run: dart format --output=none --set-exit-if-changed .
       - run: dart analyze
       - run: dart test

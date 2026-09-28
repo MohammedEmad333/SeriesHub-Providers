@@ -3,8 +3,8 @@
   "name": "elCinema",
   "version": 1,
   "minAppVersion": "0.15.0",
-  "enabled": true,
-  "status": "metadata_only",
+  "enabled": false,
+  "status": "disabled",
   "capabilities": {
     "browse": true,
     "search": true,
@@ -16,5 +16,5 @@
     "type": "builtin",
     "class": "ElCinemaProvider"
   },
-  "notes": "Metadata and viewing-guide integration. elCinema points to external platforms; SeriesHub does not treat those platform links as direct streams."
+  "notes": "Temporarily disabled in the app source list: elCinema is a metadata/viewing-guide site and does not provide a stable first-party playback flow for SeriesHub."
 }

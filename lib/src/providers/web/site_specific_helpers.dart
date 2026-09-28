@@ -1,4 +1,3 @@
-// dart format off
 import 'package:html/dom.dart';
 
 String cleanText(String value) => value.replaceAll(RegExp(r'\s+'), ' ').trim();
@@ -86,6 +85,7 @@ List<Uri> publicServerCandidates(
       );
       return index < 0 ? hosts.length + 1 : index;
     }
+
     return score(a).compareTo(score(b));
   });
 
@@ -128,4 +128,3 @@ Uri? resolveDocumentImage(Document document, Uri baseUri) {
   }
   return null;
 }
-// dart format on

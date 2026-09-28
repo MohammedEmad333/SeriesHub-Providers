@@ -104,7 +104,7 @@ class Cima4uProvider extends SimplePublicCatalogProvider {
             ? 'الحلقة $fallbackNumber'
             : cleanText(document.querySelector('h1')!.text),
         webUrl: uri,
-        thumbnailUrl: resolveImage(document, uri),
+        thumbnailUrl: resolveDocumentImage(document, uri),
       ),
     ];
   }

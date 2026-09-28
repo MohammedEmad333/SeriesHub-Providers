@@ -109,7 +109,6 @@ int? episodeNumberFrom(String text, Uri uri) {
   return slug == null ? null : int.tryParse(slug);
 }
 
-
 Uri? resolveDocumentImage(Document document, Uri baseUri) {
   for (final selector in const [
     'meta[property="og:image"]',

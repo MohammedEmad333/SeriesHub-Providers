@@ -33,13 +33,18 @@ class LarozaProvider extends SimplePublicCatalogProvider {
       if (uri.host == itemUri.host) candidates.add(uri);
     }
 
-    for (final uri in candidates.take(6)) {
-      try {
-        final sources = await resolvePublicPlayback(uri, maxEmbeds: 8);
-        if (sources.isNotEmpty) return sources;
-      } on Object {
-        // Try the next public candidate.
-      }
+    final candidateResults = await Future.wait(
+      candidates.take(4).map((uri) async {
+        try {
+          return await resolvePublicPlayback(uri, maxEmbeds: 6);
+        } on Object {
+          return const <SourcePlayback>[];
+        }
+      }),
+    );
+
+    for (final sources in candidateResults) {
+      if (sources.isNotEmpty) return sources;
     }
     return const [];
   }

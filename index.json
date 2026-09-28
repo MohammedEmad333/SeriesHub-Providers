@@ -159,8 +159,8 @@
     "nsfw": 0,
     "hasReadme": 0,
     "hasChangelog": 0,
-    "enabled": true,
-    "status": "metadata_only",
+    "enabled": false,
+    "status": "disabled",
     "playback": false,
     "manifest": "providers/elcinema/provider.json",
     "sources": [
@@ -184,9 +184,9 @@
     "nsfw": 0,
     "hasReadme": 0,
     "hasChangelog": 0,
-    "enabled": true,
-    "status": "experimental",
-    "playback": true,
+    "enabled": false,
+    "status": "broken",
+    "playback": false,
     "manifest": "providers/egibest/provider.json",
     "sources": [
       {

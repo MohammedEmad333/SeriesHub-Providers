@@ -1,8 +1,8 @@
 {
   "id": "cima4u",
   "name": "Cima4u",
-  "version": 1,
-  "minAppVersion": "0.15.0",
+  "version": 2,
+  "minAppVersion": "0.20.0",
   "enabled": true,
   "status": "experimental",
   "capabilities": {
@@ -16,5 +16,5 @@
     "type": "builtin",
     "class": "Cima4uProvider"
   },
-  "notes": "Playback resolves only direct publicly exposed HLS/DASH/MP4/WebM URLs from episode pages or public embeds. No DRM/token/authentication/anti-bot/private API bypass."
+  "notes": "Dedicated Cima4u adapter for media cards, episode links and ?wat=1 watch servers. Public direct media only; no DRM/authentication/anti-bot/private API bypass."
 }

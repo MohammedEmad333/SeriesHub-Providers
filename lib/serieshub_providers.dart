@@ -17,3 +17,6 @@ export 'src/providers/youtube/wetv_arabic_provider.dart';
 
 export 'src/providers/web/simple_public_catalog_provider.dart';
 export 'src/providers/web/catalog_sites.dart';
+export 'src/providers/web/laroza_provider.dart';
+export 'src/providers/web/cima4u_provider.dart';
+export 'src/providers/web/dramacafe_provider.dart';

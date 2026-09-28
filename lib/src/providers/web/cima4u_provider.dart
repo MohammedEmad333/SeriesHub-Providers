@@ -19,9 +19,7 @@ class Cima4uProvider extends SimplePublicCatalogProvider {
 
   @override
   Future<List<SourceSeries>> browse({int page = 1}) async {
-    final uri = page <= 1
-        ? baseUri
-        : baseUri.resolve('page/$page/');
+    final uri = page <= 1 ? baseUri : baseUri.resolve('page/$page/');
     final html = await fetchText(uri);
     final document = html_parser.parse(html);
     final items = <SourceSeries>[];

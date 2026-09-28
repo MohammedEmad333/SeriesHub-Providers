@@ -24,7 +24,9 @@ void main() {
       expect(episodeNumberFrom('مشاهدة الآن', uri), 12);
     });
 
-    test('public server candidates include lazy embeds and prefer known hosts', () {
+    test(
+      'public server candidates include lazy embeds and prefer known hosts',
+      () {
       const html = '''
         <html>
           <body>
@@ -46,10 +48,11 @@ void main() {
         preferredHosts: const ['preferred.example'],
       );
 
-      expect(result.map((uri) => uri.host), contains('slow.example'));
-      expect(result.map((uri) => uri.host), contains('backup.example'));
-      expect(result.first.host, 'preferred.example');
-    });
+        expect(result.map((uri) => uri.host), contains('slow.example'));
+        expect(result.map((uri) => uri.host), contains('backup.example'));
+        expect(result.first.host, 'preferred.example');
+      },
+    );
 
     test('public server candidates ignore obvious static assets', () {
       const html = '''

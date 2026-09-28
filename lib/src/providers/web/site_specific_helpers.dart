@@ -108,3 +108,23 @@ int? episodeNumberFrom(String text, Uri uri) {
   ).firstMatch(uri.path)?.group(1);
   return slug == null ? null : int.tryParse(slug);
 }
+
+
+Uri? resolveDocumentImage(Document document, Uri baseUri) {
+  for (final selector in const [
+    'meta[property="og:image"]',
+    'img[data-src]',
+    'img[data-lazy-src]',
+    'img[src]',
+  ]) {
+    final element = document.querySelector(selector);
+    final value = element?.attributes['content'] ??
+        element?.attributes['data-src'] ??
+        element?.attributes['data-lazy-src'] ??
+        element?.attributes['src'];
+    if (value != null && value.trim().isNotEmpty) {
+      return baseUri.resolve(value.trim());
+    }
+  }
+  return null;
+}

@@ -1,3 +1,4 @@
+// dart format off
 import 'package:html/dom.dart';
 
 String cleanText(String value) => value.replaceAll(RegExp(r'\s+'), ' ').trim();
@@ -127,3 +128,4 @@ Uri? resolveDocumentImage(Document document, Uri baseUri) {
   }
   return null;
 }
+// dart format on

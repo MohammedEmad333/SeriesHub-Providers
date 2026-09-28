@@ -15,6 +15,10 @@ jobs:
           sdk: stable
       - run: dart pub get
       - run: dart run tool/validate_repository.dart
-      - run: dart format --output=none --set-exit-if-changed .
+      - run: |
+          dart format lib/src/providers/web/site_specific_helpers.dart
+          echo '---FORMAT DIFF---'
+          git diff -- lib/src/providers/web/site_specific_helpers.dart
+          exit 1
       - run: dart analyze
       - run: dart test

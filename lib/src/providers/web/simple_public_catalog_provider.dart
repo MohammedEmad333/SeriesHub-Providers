@@ -157,6 +157,32 @@ class SimplePublicCatalogProvider implements SourceProvider {
     }
 
     episodes.sort((a, b) => a.number.compareTo(b.number));
+
+    // Some sites expose each catalog card as an already-playable episode/movie
+    // page instead of a separate series landing page. Keep the item usable by
+    // treating that page as a single episode when no episode links exist.
+    if (episodes.isEmpty) {
+      final title = _firstText(document, [
+            'h1',
+            '[itemprop="name"]',
+            '.title',
+            '.post-title',
+            'title',
+          ]) ??
+          'الحلقة 1';
+
+      episodes.add(
+        SourceEpisode(
+          id: uri.toString(),
+          seriesId: seriesId,
+          number: 1,
+          title: title,
+          webUrl: uri,
+          thumbnailUrl: _firstImage(document, uri),
+        ),
+      );
+    }
+
     return episodes;
   }
 
@@ -179,12 +205,45 @@ class SimplePublicCatalogProvider implements SourceProvider {
     // in their HTML. This intentionally does not bypass DRM, authentication,
     // anti-bot challenges, signed-player handshakes, or private APIs.
     final document = html_parser.parse(html);
-    final embeds = document
-        .querySelectorAll('iframe[src]')
-        .map((element) => element.attributes['src'])
-        .whereType<String>()
+    final embedValues = <String>{};
+
+    for (final element in document.querySelectorAll(
+      'iframe[src], iframe[data-src], iframe[data-lazy-src], [data-url]',
+    )) {
+      for (final attribute in const [
+        'src',
+        'data-src',
+        'data-lazy-src',
+        'data-url',
+      ]) {
+        final value = element.attributes[attribute]?.trim();
+        if (value != null && value.isNotEmpty) {
+          embedValues.add(value);
+        }
+      }
+    }
+
+    // A number of public players declare server/embed URLs in inline scripts
+    // instead of assigning them to iframe.src until the user chooses a server.
+    // Follow only ordinary public HTTP(S) URLs; direct media extraction below
+    // still decides whether a usable stream exists.
+    for (final match in RegExp(
+      r'''https?:\\?/\\?/[^"'\\s<>]+''',
+      caseSensitive: false,
+    ).allMatches(html)) {
+      final value = match.group(0)?.replaceAll(r'\/', '/');
+      if (value != null && value.isNotEmpty) {
+        embedValues.add(value);
+      }
+    }
+
+    final embeds = embedValues
         .map(pageUri.resolve)
         .where((uri) => uri.scheme == 'http' || uri.scheme == 'https')
+        .where((uri) => !RegExp(
+              r'\.(?:jpg|jpeg|png|gif|webp|css|js)(?:$|\?)',
+              caseSensitive: false,
+            ).hasMatch(uri.toString()))
         .take(maxEmbeds);
 
     final result = <SourcePlayback>[];
@@ -232,6 +291,16 @@ class SimplePublicCatalogProvider implements SourceProvider {
       if (target.scheme != 'http' && target.scheme != 'https') continue;
       if (target.host != baseUri.host &&
           !target.host.endsWith('.${baseUri.host}')) {
+        continue;
+      }
+
+      // Do not accidentally turn navigation/category/filter links into media
+      // cards (this was especially visible on Cima4u).
+      final path = target.path.toLowerCase();
+      if (RegExp(
+        r'^/(?:category|tag|genre|genres|year|quality|language|country|search)(?:/|$)',
+        caseSensitive: false,
+      ).hasMatch(path)) {
         continue;
       }
 

@@ -244,34 +244,45 @@ class SimplePublicCatalogProvider implements SourceProvider {
               r'\.(?:jpg|jpeg|png|gif|webp|css|js)(?:$|\?)',
               caseSensitive: false,
             ).hasMatch(uri.toString()))
-        .take(maxEmbeds);
+        .take(maxEmbeds)
+        .toList(growable: false);
+
+    // Resolve public embeds concurrently. Sequential probing could make a tap
+    // look completely unresponsive for well over a minute when several hosts
+    // were slow or blocked.
+    final batches = await Future.wait(
+      embeds.map((embedUri) async {
+        try {
+          final embedHtml = await fetchText(
+            embedUri,
+            extraHeaders: {'Referer': pageUri.toString()},
+          );
+          return extractPlayback(embedHtml, embedUri)
+              .map(
+                (source) => SourcePlayback(
+                  url: source.url,
+                  label: source.label,
+                  mimeType: source.mimeType,
+                  headers: {
+                    ...source.headers,
+                    'Referer': embedUri.toString(),
+                  },
+                ),
+              )
+              .toList(growable: false);
+        } on Object {
+          return const <SourcePlayback>[];
+        }
+      }),
+    );
 
     final result = <SourcePlayback>[];
     final seen = <String>{};
-
-    for (final embedUri in embeds) {
-      try {
-        final embedHtml = await fetchText(
-          embedUri,
-          extraHeaders: {'Referer': pageUri.toString()},
-        );
-        for (final source in extractPlayback(embedHtml, embedUri)) {
-          if (seen.add(source.url.toString())) {
-            result.add(
-              SourcePlayback(
-                url: source.url,
-                label: source.label,
-                mimeType: source.mimeType,
-                headers: {
-                  ...source.headers,
-                  'Referer': embedUri.toString(),
-                },
-              ),
-            );
-          }
+    for (final batch in batches) {
+      for (final source in batch) {
+        if (seen.add(source.url.toString())) {
+          result.add(source);
         }
-      } on Object {
-        // A blocked/unavailable embed should not break the whole episode.
       }
     }
 

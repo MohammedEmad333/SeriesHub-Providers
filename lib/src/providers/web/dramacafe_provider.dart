@@ -101,7 +101,7 @@ class DramaCafeProvider extends SimplePublicCatalogProvider {
         number: number,
         title: heading.isEmpty ? 'الحلقة $number' : heading,
         webUrl: uri,
-        thumbnailUrl: resolveImage(document, uri),
+        thumbnailUrl: resolveDocumentImage(document, uri),
       ),
     ];
   }
